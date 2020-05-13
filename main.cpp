@@ -84,20 +84,20 @@ int main()
     winText.setFont(font);
     winText.setString("YOU WON!");
     winText.setCharacterSize(14);
-    winText.setColor(Color::White);
+    winText.setOutlineColor(Color::White);
     winText.move(8, 25);
 
     Text scoreText;
     scoreText.setFont(font);
     scoreText.setString("SCORE: ");
     scoreText.setCharacterSize(10);
-    scoreText.setColor(Color::White);
+    scoreText.setOutlineColor(Color::White);
     scoreText.move(100, 15);
 
     Text points;
     points.setFont(font);
     points.setCharacterSize(10);
-    points.setColor(Color::White);
+    points.setOutlineColor(Color::White);
     points.move(140, 15);
 
     /* TEXTURE LOADING */
@@ -258,6 +258,7 @@ int main()
     {
         gameWin = true;
         window.draw(winText);
+        bgMusic.stop();
     }
 
     /* OLD FIGURE DRAWING */
@@ -281,9 +282,6 @@ int main()
             sBlock.move(8, 8);
             window.draw(sBlock);
         }
-
-    if (!bgMusic.getStatus() && !gameWin)
-    bgMusic.play();
 
     window.display();
 	}
