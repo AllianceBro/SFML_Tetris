@@ -13,13 +13,13 @@ using namespace sf;
     Each number stands for one block, which will be included in one of 7 figures.
   */
     /* SET GLOBAL VARIABLES */
-    bool gameBegin(true);
-    int signed moveX(0), moveY(0); //X and Y movements
-    bool rotateF(false);            //Figure rotation
+    bool gameBegin(true), gameOver(false);
+    int signed moveX(0), moveY(0);              //X and Y movements
+    bool rotateF(false);                        //Figure rotation
     float timer(0), delay(0.3);
     char colorNum(1);
     const unsigned char width(10), height(20);
-    int field[height][width] = {0};            //Main game field
+    int field[height][width] = {0};             //Main game matrix
     int figures[7][4]=
     {
         1,3,5,7, // I figure
@@ -31,7 +31,7 @@ using namespace sf;
         2,3,4,5, // O figure
     };
 
-    struct Point
+    struct Point //New coords and previous coords of the figure
     {
         int x, y;
     };
@@ -41,9 +41,9 @@ using namespace sf;
 bool Check()
 {
     for (int i = 0; i < 4; i++)
-        if (coords[i].x < 0 || coords[i].x >= width || coords[i].y >= height)
+        if (coords[i].x < 0 || coords[i].x >= width || coords[i].y >= height) //Check if a figure touches the borders
             return false;
-        else if (field[coords[i].y][coords[i].x])
+        else if (field[coords[i].y][coords[i].x])                             //Check if smth already exists on the figure's way
             return false;
 
         return true;
@@ -85,7 +85,7 @@ int main()
             {
                if (event.key.code == Keyboard::Left) moveX = -1;
                     else if (event.key.code == Keyboard::Right) moveX = 1;
-                        else if (event.key.code == Keyboard::Down) delay = 0.05;
+                        else if (event.key.code == Keyboard::Down) delay = 0.05; //Make figure falling faster
                             else if (event.key.code == Keyboard::Up) rotateF = true;
                                 else if (event.key.code == Keyboard::Escape) window.close();
 
@@ -94,7 +94,7 @@ int main()
     int nFigure = rand() % 7;                                //Figure random number
 
     /* INICIATE FIRST APPEREANCE OF FIRST FIGURE */
-    if (gameBegin)
+    if (gameBegin)                                          //Is it the first figure on the screen?
     {
         gameBegin = false;
         for (int i = 0; i < 4; i++)                         //Set coords for each block
@@ -138,8 +138,9 @@ int main()
         {
             coordsOld[i] = coords[i];
             coords[i].y +=1;
+
         }
-        if(!Check())
+        if (!Check())
         {
             /* FIGURE COLOUR AND NUMBER CHANGING */
             for (int i = 0; i < 4; i++)
@@ -151,12 +152,16 @@ int main()
             {
                 coords[i].x = figures[nFigure][i] % 2 + 4;
                 coords[i].y = figures[nFigure][i] / 2;
+                if (field[coords[i].y][coords[i].x] == field[coordsOld[i].y][coordsOld[i].x])
+                    gameOver = true;
             }
             delay = 0.3;
         }
         timer = 0;
     }
 
+    if(gameOver)
+        window.close();
     moveX = 0;
     moveY = 0;
     rotateF = false;
@@ -166,11 +171,13 @@ int main()
 
     window.draw(mainFrame);
 
-    for (int i = 0; i < height; i++){
+    /* OLD FIGURE DRAWING */
+    for (int i = 0; i < height; i++){   //Check main game field matrix
         for (int j = 0; j < width; j++)
         {
-            if (field[i][j] != 0){
-                sBlock.setTextureRect(IntRect(colorNum * 8, 192, 8, 8));
+            if (field[i][j] != 0){      //If smth already exists, that means there is a block of the previous figure
+                char colorNum2 = field[i][j];
+                sBlock.setTextureRect(IntRect(colorNum2 * 8, 192, 8, 8));
                 sBlock.setPosition(j * 8, i * 8);
                 sBlock.move(8, 8);
                 window.draw(sBlock);}
