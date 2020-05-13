@@ -152,6 +152,7 @@ int main()
             {
                 coords[i].x = figures[nFigure][i] % 2 + 4;
                 coords[i].y = figures[nFigure][i] / 2;
+            /* CHECK IF THERE IS ENOUGH SPACE FOR NEXT FIGURE ON THE SCREEN */
                 if (field[coords[i].y][coords[i].x] == field[coordsOld[i].y][coordsOld[i].x])
                     gameOver = true;
             }
@@ -159,12 +160,27 @@ int main()
         }
         timer = 0;
     }
-
+    /* GAME OVER CONDITION */
     if(gameOver)
         window.close();
     moveX = 0;
     moveY = 0;
     rotateF = false;
+
+    /* CHECK BLOCKS LINE WHICH MUST BE DELETED */
+    int k(height-1);
+    for (int i = height - 1; i > 0; i--) //Check matrix from bottom to upper border
+    {
+        int blockClear(0);              //Number of blocks in line
+        for (int j = 0; j < width; j++)
+        {
+            if (field[i][j])            //If there is one block, we count it
+                blockClear++;
+            field[k][j] = field[i][j];  //Assign coords of upper line to lower one, blocks move        }
+        }
+        if (blockClear < width)         //If there is more than 10 blocks, K doesnt change
+            k--;
+    }
 
     /* WINDOW DRAWING SECTION */
     window.clear(Color::White);
@@ -172,8 +188,9 @@ int main()
     window.draw(mainFrame);
 
     /* OLD FIGURE DRAWING */
-    for (int i = 0; i < height; i++){   //Check main game field matrix
-        for (int j = 0; j < width; j++)
+    for (int i = 0; i < height; i++)      //Check main game field matrix
+	{
+	    for (int j = 0; j < width; j++)
         {
             if (field[i][j] != 0){      //If smth already exists, that means there is a block of the previous figure
                 char colorNum2 = field[i][j];
