@@ -13,6 +13,7 @@ using namespace sf;
     Each number stands for one block, which will be included in one of 7 figures.
   */
     /* SET GLOBAL VARIABLES */
+    bool gameBegin(true);
     int signed moveX(0), moveY(0); //X and Y movements
     bool rotateF(false);            //Figure rotation
     float timer(0), delay(0.3);
@@ -42,7 +43,7 @@ bool Check()
     for (int i = 0; i < 4; i++)
         if (coords[i].x < 0 || coords[i].x >= width || coords[i].y >= height)
             return false;
-        else if (field[coords[i].x][coords[i].y])
+        else if (field[coords[i].y][coords[i].x])
             return false;
 
         return true;
@@ -93,9 +94,9 @@ int main()
     int nFigure = rand() % 7;                                //Figure random number
 
     /* INICIATE FIRST APPEREANCE OF FIRST FIGURE */
-    if (coords[0].y == 0)
+    if (gameBegin)
     {
-
+        gameBegin = false;
         for (int i = 0; i < 4; i++)                         //Set coords for each block
         {
             coords[i].x = figures[nFigure][i] % 2 + 4;
@@ -142,10 +143,10 @@ int main()
         {
             /* FIGURE COLOUR AND NUMBER CHANGING */
             for (int i = 0; i < 4; i++)
-                field[coordsOld[i].y][coordsOld[i].x] = colorNum;
-                colorNum = 1 + rand() % 7;
-                nFigure = rand() % 7;
-            /* INICIATE NEXT LOCATION OF NEW FIGURE */
+                    field[coordsOld[i].y][coordsOld[i].x] = colorNum;
+            colorNum = 1 + rand() % 7;
+            nFigure = rand() % 7;
+            /* INICIATE NEXT LOCAION OF NEW FIGURE */
             for (int i = 0; i < 4; i++)
             {
                 coords[i].x = figures[nFigure][i] % 2 + 4;
@@ -164,6 +165,17 @@ int main()
     window.clear(Color::White);
 
     window.draw(mainFrame);
+
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++)
+        {
+            if (field[i][j] != 0){
+                sBlock.setTextureRect(IntRect(colorNum * 8, 192, 8, 8));
+                sBlock.setPosition(j * 8, i * 8);
+                sBlock.move(8, 8);
+                window.draw(sBlock);}
+        }
+    }
 
     for (int i = 0; i < 4; i++)
     {
